@@ -13,7 +13,7 @@ export class TeacherSampleComponent {
   teacher: Teacher;
 
   constructor() {
-    // Initialize with sample data
+   
     this.teacher = new Teacher(
       1,
       'Dr. Jane Smith',

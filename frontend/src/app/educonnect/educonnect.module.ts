@@ -1,27 +1,33 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { EduConnectRoutingModule } from "./educonnect-routing.module";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { HttpClientModule } from "@angular/common/http";
-import { TeacherCreateComponent } from "./components/teachercreate/teachercreate.component";
-import { CourseCreateComponent } from "./components/coursecreate/coursecreate.component";
-import { StudentCreateComponent } from "./components/studentcreate/studentcreate.component";
-import { EnrollmentComponent } from "./components/enrollment/enrollment.component";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+
+import { SharedModule } from '../shared/shared.module';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { StudentCreateComponent } from './components/studentcreate/studentcreate.component';
+import { TeacherCreateComponent } from './components/teachercreate/teachercreate.component';
+import { CourseCreateComponent } from './components/coursecreate/coursecreate.component';
+import { EduConnectService } from './services/educonnect.service';
 
 @NgModule({
   declarations: [
-    TeacherCreateComponent,
-    CourseCreateComponent,
+    DashboardComponent,
     StudentCreateComponent,
-    EnrollmentComponent
+    TeacherCreateComponent,
+    CourseCreateComponent
   ],
   imports: [
     CommonModule,
-    EduConnectRoutingModule,
     ReactiveFormsModule,
+    FormsModule,
     HttpClientModule,
-    FormsModule
+    RouterModule,
+    SharedModule
   ],
-  exports: []
+  providers: [
+    EduConnectService
+  ]
 })
-export class EduconnectModule {}
+export class EduconnectModule { }
