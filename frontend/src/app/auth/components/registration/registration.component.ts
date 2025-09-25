@@ -25,10 +25,10 @@ export class RegistrationComponent implements OnInit {
             password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]],
             fullName: ['', Validators.required],
             contactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-        
+
             studentClass: [''],
             teacherSubject: [''],
-          
+
             subject: [''],
             yearsOfExperience: [null],
             dateOfBirth: [null],
@@ -39,7 +39,7 @@ export class RegistrationComponent implements OnInit {
     onRoleChange(event: Event): void {
         const role = (event.target as HTMLSelectElement).value;
         this.selectedRole = role;
-        
+
         if (role === 'STUDENT') {
             this.registrationForm.get('studentClass')?.setValidators([Validators.required]);
             this.registrationForm.get('teacherSubject')?.clearValidators();
@@ -49,13 +49,13 @@ export class RegistrationComponent implements OnInit {
             this.registrationForm.get('studentClass')?.clearValidators();
             this.registrationForm.get('studentClass')?.setValue('');
         } else {
-         
+
             this.registrationForm.get('studentClass')?.clearValidators();
             this.registrationForm.get('teacherSubject')?.clearValidators();
             this.registrationForm.get('studentClass')?.setValue('');
             this.registrationForm.get('teacherSubject')?.setValue('');
         }
-        
+
         this.registrationForm.get('studentClass')?.updateValueAndValidity();
         this.registrationForm.get('teacherSubject')?.updateValueAndValidity();
     }
@@ -92,8 +92,8 @@ export class RegistrationComponent implements OnInit {
     resetForm(): void {
         this.registrationForm.reset();
         this.selectedRole = null;
-        
-       
+
+
         this.registrationForm.get('studentClass')?.clearValidators();
         this.registrationForm.get('teacherSubject')?.clearValidators();
         this.registrationForm.get('studentClass')?.updateValueAndValidity();

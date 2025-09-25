@@ -13,12 +13,12 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/auth',
+    redirectTo: '/auth',  // Redirect to 'auth' route by default
   }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
