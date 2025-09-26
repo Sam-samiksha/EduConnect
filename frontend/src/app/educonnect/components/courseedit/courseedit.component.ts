@@ -1,3 +1,4 @@
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -51,7 +52,8 @@ export class CourseEditComponent implements OnInit {
             next: ({ teacher, course }) => {
                 this.teacher = teacher;
                 this.course = course;
-
+    
+                
                 this.courseForm.patchValue({
                     courseName: this.course.courseName,
                     description: this.course.description,
@@ -85,12 +87,13 @@ export class CourseEditComponent implements OnInit {
 
     private handleError(error: HttpErrorResponse): void {
         if (error.error instanceof ErrorEvent) {
+            
             this.errorMessage = ` ${error.error.message}`;
         } else {
+            
             this.errorMessage = `${error.error}`;
         }
         this.successMessage = null;
     }
 }
-
 

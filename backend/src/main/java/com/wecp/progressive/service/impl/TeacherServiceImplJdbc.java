@@ -1,81 +1,77 @@
 package com.wecp.progressive.service.impl;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.wecp.progressive.dao.TeacherDAO;
+import com.wecp.progressive.entity.Student;
 import com.wecp.progressive.entity.Teacher;
 import com.wecp.progressive.service.TeacherService;
+
+import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.List;
 
 public class TeacherServiceImplJdbc implements TeacherService {
 
     private TeacherDAO teacherDAO;
 
-    public TeacherServiceImplJdbc(TeacherDAO teacherDAO)  {
+    public TeacherServiceImplJdbc(TeacherDAO teacherDAO) {
         this.teacherDAO = teacherDAO;
     }
 
     @Override
-    public List<Teacher> getAllTeachers() throws SQLException {
-        List<Teacher> teachers = new ArrayList<>();
+    public List<Teacher> getAllTeachers() throws Exception {
         try {
-            teachers = teacherDAO.getAllTeachers();
+            return teacherDAO.getAllTeachers();
         } catch (SQLException e) {
-            throw new SQLException("Failed to get all teachers "+e.getMessage());
+            throw new Exception("Error fetching all teachers", e);
         }
-        return teachers;
     }
 
     @Override
-    public Integer addTeacher(Teacher teacher) throws SQLException {
-        Integer teacherId = null;
+    public Integer addTeacher(Teacher teacher) throws Exception {
         try {
-            teacherId = teacherDAO.addTeacher(teacher);
+            return teacherDAO.addTeacher(teacher);
         } catch (SQLException e) {
-            throw new SQLException("Failed to add teachers "+e.getMessage());
+            throw new Exception("Error adding teacher: " + teacher.getFullName(), e);
         }
-        return teacherId;
     }
 
     @Override
-    public List<Teacher> getTeacherSortedByExperience() throws SQLException {
-        List<Teacher> sortedTeachers = new ArrayList<>();
+    public List<Teacher> getTeacherSortedByExperience() throws Exception {
         try {
-            sortedTeachers = teacherDAO.getAllTeachers();
-            Collections.sort(sortedTeachers);
-
+            List<Teacher> sortedTeachers = teacherDAO.getAllTeachers();
+            if (!sortedTeachers.isEmpty()) {
+                sortedTeachers.sort(Comparator.comparing(Teacher::getYearsOfExperience));
+            }
+            return sortedTeachers;
         } catch (SQLException e) {
-            throw new SQLException("Failed to get all teachers sorted by experience"+e.getMessage());
+            throw new Exception("Error fetching teachers sorted by Years of Experience ", e);
         }
-        return sortedTeachers;
     }
 
-    public void updateTeacher(Teacher teacher) throws SQLException {
+    @Override
+    public void updateTeacher(Teacher teacher) throws Exception {
         try {
             teacherDAO.updateTeacher(teacher);
         } catch (SQLException e) {
-            throw new SQLException("Failed to update teachers "+e.getMessage());
+            throw new Exception("Error updating teacher with ID " + teacher.getTeacherId(), e);
         }
     }
 
-    public void deleteTeacher(int teacherId) throws SQLException {
+    @Override
+    public void deleteTeacher(int teacherId) throws Exception {
         try {
             teacherDAO.deleteTeacher(teacherId);
         } catch (SQLException e) {
-            throw new SQLException("Failed to delete teachers "+e.getMessage());
+            throw new Exception("Error deleting teacher with ID " + teacherId, e);
         }
     }
 
-    public Teacher getTeacherById(int teacherId) throws SQLException {
-        Teacher teacher = null;
+    @Override
+    public Teacher getTeacherById(int teacherId) throws Exception {
         try {
-            teacher = teacherDAO.getTeacherById(teacherId);
-        } catch (SQLException e) {
-            throw new SQLException("Failed to get teachers by ID "+e.getMessage());
+            return teacherDAO.getTeacherById(teacherId);
+        } catch (Exception e) {
+            throw new Exception("Error fetching teacher with ID " + teacherId, e);
         }
-        return teacher;
     }
-
 }

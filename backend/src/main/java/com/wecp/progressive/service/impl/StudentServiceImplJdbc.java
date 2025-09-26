@@ -1,13 +1,12 @@
 package com.wecp.progressive.service.impl;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.wecp.progressive.dao.StudentDAO;
 import com.wecp.progressive.entity.Student;
 import com.wecp.progressive.service.StudentService;
+
+import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.List;
 
 public class StudentServiceImplJdbc implements StudentService {
 
@@ -18,66 +17,60 @@ public class StudentServiceImplJdbc implements StudentService {
     }
 
     @Override
-    public List<Student> getAllStudents() throws SQLException {
-        List<Student> students = new ArrayList<>();
+    public List<Student> getAllStudents() throws Exception {
         try {
-            students = studentDAO.getAllStudents();
+            return studentDAO.getAllStudents();
         } catch (SQLException e) {
-            throw new SQLException("Failed to get all students "+e.getMessage());
+            throw new Exception("Error fetching all students", e);
         }
-        return students;
     }
 
     @Override
-    public Integer addStudent(Student student) throws SQLException {
-        Integer studentId = null;
+    public Integer addStudent(Student student) throws Exception {
         try {
-            studentId = studentDAO.addStudent(student);
+            return studentDAO.addStudent(student);
         } catch (SQLException e) {
-            throw new SQLException("Failed to add students " +e.getMessage());
+            throw new Exception("Error adding student: " + student.getFullName(), e);
         }
-        return studentId;
     }
 
     @Override
-    public List<Student> getAllStudentSortedByName() throws SQLException {
-        List<Student> sortedStudents = new ArrayList<>();
+    public List<Student> getAllStudentSortedByName() throws Exception {
         try {
-            sortedStudents = studentDAO.getAllStudents();
-            Collections.sort(sortedStudents);
-
+            List<Student> sortedStudents = studentDAO.getAllStudents();
+            if (!sortedStudents.isEmpty()) {
+                sortedStudents.sort(Comparator.comparing(Student::getFullName));
+            }
+            return sortedStudents;
         } catch (SQLException e) {
-            throw new SQLException("Failed to get all students sorted by name"+e.getMessage());
+            throw new Exception("Error fetching students sorted by Name ", e);
         }
-        return sortedStudents;
     }
 
     @Override
-    public void updateStudent(Student student) throws SQLException {
+    public void updateStudent(Student student) throws Exception {
         try {
             studentDAO.updateStudent(student);
         } catch (SQLException e) {
-            throw new SQLException("Failed to update students "+e.getMessage());
+            throw new Exception("Error updating student with ID " + student.getStudentId(), e);
         }
     }
 
     @Override
-    public void deleteStudent(int studentId) throws SQLException {
+    public void deleteStudent(int studentId) throws Exception {
         try {
             studentDAO.deleteStudent(studentId);
         } catch (SQLException e) {
-           throw new SQLException("Failed to delete students "+e.getMessage());
+            throw new Exception("Error deleting student with ID " + studentId, e);
         }
     }
 
     @Override
-    public Student getStudentById(int studentId) throws SQLException{
-        Student student = null;
+    public Student getStudentById(int studentId) throws Exception {
         try {
-            student = studentDAO.getStudentById(studentId);
-        } catch (SQLException e) {
-            throw new SQLException("Failed to get students by ID "+e.getMessage());
+            return studentDAO.getStudentById(studentId);
+        } catch (Exception e) {
+            throw new Exception("Error fetching student with ID " + studentId, e);
         }
-        return student;
     }
 }

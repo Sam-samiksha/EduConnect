@@ -1,21 +1,19 @@
+
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-navbar',
-    templateUrl: './navbar.component.html',
-    styleUrls: ['./navbar.component.scss']
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.scss']
 })
 export class NavBarComponent implements OnInit {
-    role: string | null = null;
 
-    constructor(private router: Router) { }
+  constructor() { }
 
-    ngOnInit(): void {
-        this.role = localStorage.getItem('role');
-    }
+  role:string|null;
+  ngOnInit(): void {
+    console.log(localStorage.getItem("role"));
+    this.role=localStorage.getItem("role");
+  }
 
-    goToDashboard(): void {
-        this.router.navigate(['/dashboard']);
-    }
 }

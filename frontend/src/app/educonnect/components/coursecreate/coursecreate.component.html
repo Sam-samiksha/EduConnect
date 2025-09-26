@@ -1,22 +1,34 @@
-<h2>Create Course</h2>
-<form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
-    <label>Course Name</label>
-    <input formControlName="courseName" />
-    <div *ngIf="submitted && f['courseName'].errors">Course name required</div>
-    <label>Description</label>
-    <textarea formControlName="description"></textarea>
-    <div *ngIf="submitted && f['description'].errors">
-        <span *ngIf="f['description'].errors['required']">Description required</span>
-        <span *ngIf="f['description'].errors['maxlength']">Max 500 characters</span>
-    </div>
-    <label>Teacher ID</label>
-    <input formControlName="teacherId" />
-    <div *ngIf="submitted && f['teacherId'].errors">
-        <span *ngIf="f['teacherId'].errors['required']">Teacher ID required</span>
-        <span *ngIf="f['teacherId'].errors['pattern']">Must be numeric</span>
-    </div>
-    <button type="submit">Submit</button>
-    <button type="button" (click)="resetForm()">Reset</button>
-</form>
-<div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
-<div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+<div class="form-container">
+    <h2>Create Course</h2>
+    <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="courseName">Course Name:</label>
+            <input type="text" id="courseName" formControlName="courseName" />
+            <div *ngIf="courseForm.get('courseName')?.invalid && courseForm.get('courseName')?.touched" class="error">
+                Course Name is required.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" formControlName="description"></textarea>
+            <div *ngIf="courseForm.get('description')?.invalid && courseForm.get('description')?.touched" class="error">
+                Description must be less than 500 characters.
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="teacher">Teacher Name:</label>
+            <input type="text" id="teacher" formControlName="teacher" [readonly]="true" class="readonly-input" />
+        </div>
+        <div class="form-actions">
+            <button type="submit" [disabled]="courseForm.invalid">Submit</button>
+        </div>
+        <div class="form-footer">
+            <a routerLink="/educonnect" class="link">Dashboard</a>
+        </div>
+    </form>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div>

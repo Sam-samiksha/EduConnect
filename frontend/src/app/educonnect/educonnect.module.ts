@@ -38,12 +38,4 @@ import { CourseEditComponent } from "./components/courseedit/courseedit.componen
   exports: [
   ]
 })
-export class EduconnectModule { }
-
-
-
-
-
-
-
-
+export class EduconnectModule {}

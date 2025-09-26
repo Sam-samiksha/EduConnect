@@ -1,41 +1,26 @@
 package com.wecp.progressive.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Comparator;
 
 @Entity
-@Table(name = "teacher")
 public class Teacher implements Comparable<Teacher> {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "teacher_id")
     private int teacherId;
-
-    @Column(name = "full_name")
     private String fullName;
-
-    @Column(name = "subject")
     private String subject;
-
-    @Column(name = "contact_number")
     private String contactNumber;
-
-    @Column(name = "email")
     private String email;
-
-    @Column(name = "years_of_experience")
     private int yearsOfExperience;
 
     public Teacher() {
     }
 
-    public Teacher(int teacherId, String fullName, String subject, String contactNumber, String email,
-            int yearsOfExperience) {
+    public Teacher(int teacherId, String fullName, String subject, String contactNumber, String email, int yearsOfExperience) {
         this.teacherId = teacherId;
         this.fullName = fullName;
         this.subject = subject;
@@ -93,7 +78,8 @@ public class Teacher implements Comparable<Teacher> {
     }
 
     @Override
-    public int compareTo(Teacher o) {
-        return Integer.compare(this.yearsOfExperience, o.getYearsOfExperience());
+    public int compareTo(Teacher otherTeacher) {
+        return Comparator.comparingInt(Teacher::getYearsOfExperience)
+                .compare(this, otherTeacher);
     }
 }

@@ -73,5 +73,4 @@ public class TeacherDTO {
     public void setYearsOfExperience(Integer yearsOfExperience) {
         this.yearsOfExperience = yearsOfExperience;
     }
-
 }

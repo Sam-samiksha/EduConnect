@@ -15,103 +15,108 @@ import { StudentDTO } from "../models/StudentDTO";
 })
 export class EduConnectService {
   private baseUrl = `${environment.apiUrl}`;
-  getStudentsByTeacherId: any;
 
   constructor(private http: HttpClient) {}
 
- 
+  
+
   addStudent(student: Student): Observable<Student> {
-    return this.http.post<Student>(`${this.baseUrl}/students`, student);
+    return this.http.post<Student>(`${this.baseUrl}/student`, student);
   }
 
   updateStudent(student: StudentDTO): Observable<Student> {
-    return this.http.put<Student>(`${this.baseUrl}/students/${student.studentId}`, student);
+    return this.http.put<Student>(`${this.baseUrl}/student/${student.studentId}`, student);
   }
 
   deleteStudent(studentId: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/students/${studentId}`);
+    return this.http.delete<any>(`${this.baseUrl}/student/${studentId}`);
   }
 
   getAllStudents(): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.baseUrl}/students`);
+    return this.http.get<Student[]>(`${this.baseUrl}/student`);
   }
 
   getStudentById(studentId: number): Observable<Student> {
-    return this.http.get<Student>(`${this.baseUrl}/students/${studentId}`);
+    return this.http.get<any>(`${this.baseUrl}/student/${studentId}`);
   }
 
+  
 
   addTeacher(teacher: Teacher): Observable<Teacher> {
-    return this.http.post<Teacher>(`${this.baseUrl}/teachers`, teacher);
+    return this.http.post<Teacher>(`${this.baseUrl}/teacher`, teacher);
   }
 
   updateTeacher(teacher: TeacherDTO): Observable<Teacher> {
-    return this.http.put<Teacher>(`${this.baseUrl}/teachers/${teacher.teacherId}`, teacher);
+    return this.http.put<Teacher>(`${this.baseUrl}/teacher/${teacher.teacherId}`, teacher);
   }
 
   deleteTeacher(teacherId: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/teachers/${teacherId}`);
+    return this.http.delete<any>(`${this.baseUrl}/teacher/${teacherId}`);
   }
 
   getAllTeachers(): Observable<Teacher[]> {
-    return this.http.get<Teacher[]>(`${this.baseUrl}/teachers`);
+    return this.http.get<Teacher[]>(`${this.baseUrl}/teacher`);
   }
 
   getTeacherById(teacherId: number): Observable<Teacher> {
-    return this.http.get<Teacher>(`${this.baseUrl}/teachers/${teacherId}`);
+    return this.http.get<Teacher>(`${this.baseUrl}/teacher/${teacherId}`);
   }
 
- 
+  
+
   addCourse(course: Course): Observable<Course> {
-    return this.http.post<Course>(`${this.baseUrl}/courses`, course);
+    return this.http.post<Course>(`${this.baseUrl}/course`, course);
   }
 
   updateCourse(course: Course): Observable<Course> {
-    return this.http.put<Course>(`${this.baseUrl}/courses/${course.courseId}`, course);
+    return this.http.put<Course>(`${this.baseUrl}/course/${course.courseId}`, course);
   }
 
   deleteCourse(courseId: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/courses/${courseId}`);
+    return this.http.delete<any>(`${this.baseUrl}/course/${courseId}`);
   }
 
   getAllCourses(): Observable<Course[]> {
-    return this.http.get<Course[]>(`${this.baseUrl}/courses`);
+    return this.http.get<Course[]>(`${this.baseUrl}/course`);
   }
 
   getCourseById(courseId: number): Observable<Course> {
-    return this.http.get<Course>(`${this.baseUrl}/courses/${courseId}`);
+    return this.http.get<Course>(`${this.baseUrl}/course/${courseId}`);
   }
 
   getCoursesByTeacherId(teacherId: number): Observable<Course[]> {
-    return this.http.get<Course[]>(`${this.baseUrl}/courses/teacher/${teacherId}`);
-  }
+      return this.http.get<Course[]>(`${this.baseUrl}/course/teacher/${teacherId}`);
+    }
 
- 
+  
+
   createEnrollment(enrollment: Enrollment): Observable<Enrollment> {
-    return this.http.post<Enrollment>(`${this.baseUrl}/enrollments`, enrollment);
+    return this.http.post<Enrollment>(`${this.baseUrl}/enrollment`, enrollment);
   }
 
   updateEnrollment(enrollment: Enrollment): Observable<Enrollment> {
-    return this.http.put<Enrollment>(`${this.baseUrl}/enrollments/${enrollment.enrollmentId}`, enrollment);
+    return this.http.put<Enrollment>(`${this.baseUrl}/enrollment/${enrollment.enrollmentId}`, enrollment);
   }
 
   getAllEnrollments(): Observable<Enrollment[]> {
-    return this.http.get<Enrollment[]>(`${this.baseUrl}/enrollments`);
+    return this.http.get<Enrollment[]>(`${this.baseUrl}/enrollment`);
   }
 
   getEnrollmentById(enrollmentId: number): Observable<Enrollment> {
-    return this.http.get<Enrollment>(`${this.baseUrl}/enrollments/${enrollmentId}`);
+    return this.http.get<Enrollment>(`${this.baseUrl}/enrollment/${enrollmentId}`);
   }
 
   getEnrollmentsByCourse(courseId: number): Observable<Enrollment[]> {
-    return this.http.get<Enrollment[]>(`${this.baseUrl}/enrollments/course/${courseId}`);
+    return this.http.get<Enrollment[]>(`${this.baseUrl}/enrollment/course/${courseId}`);
   }
 
   getEnrollmentsByStudent(studentId: number): Observable<Enrollment[]> {
-    return this.http.get<Enrollment[]>(`${this.baseUrl}/enrollments/student/${studentId}`);
+    return this.http.get<Enrollment[]>(`${this.baseUrl}/enrollment/student/${studentId}`);
   }
- 
+
+  
+
   getUserById(userId: number): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/users/${userId}`);
+    return this.http.get<User>(`${this.baseUrl}/user/${userId}`);
   }
 }

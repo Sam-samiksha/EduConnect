@@ -1,106 +1,157 @@
-
 package com.wecp.progressive.dao;
+
+import com.wecp.progressive.config.DatabaseConnectionManager;
+import com.wecp.progressive.entity.Course;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wecp.progressive.config.DatabaseConnectionManager;
-import com.wecp.progressive.entity.Course;
-
 public class CourseDAOImpl implements CourseDAO {
-
-    private Connection connection;
-
-    public CourseDAOImpl() {
-        try {
-            connection = DatabaseConnectionManager.getConnection();
-        } catch (SQLException e) {
-            System.out.println("Failed to initialize the Database" + e.getMessage());
-        }
-    }
 
     @Override
     public int addCourse(Course course) throws SQLException {
-        String query = "INSERT INTO course (course_name, description, teacher_id) VALUES (?,?,?)";
-        try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, course.getCourseName());
-            ps.setString(2, course.getDescription());
-            // ps.setInt(3, course.getTeacherId());
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        int generatedID = -1;
 
-            int affectedRows = ps.executeUpdate();
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "INSERT INTO Course (course_name, description, teacher_id) VALUES (?, ?, ?)";
+            statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
-            if (affectedRows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    course.setCourseId(rs.getInt(1));
-                    return course.getCourseId();
-                }
+            statement.setString(1, course.getCourseName());
+            statement.setString(2, course.getDescription());
+            statement.setInt(3, course.getTeacher().getTeacherId());
+
+            statement.executeUpdate();
+
+            resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                generatedID = resultSet.getInt(1);
+                course.setCourseId(generatedID); 
             }
         } catch (SQLException e) {
-            throw new SQLException("Failed to insert the data in the Course table " + e.getMessage());
+            System.err.println("Error adding course: " + e.getMessage());
+            throw e; 
+        } finally {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
-        return -1;
+        return generatedID;
     }
 
     @Override
     public Course getCourseById(int courseId) throws SQLException {
-        Course course = null;
-        String query = "SELECT * FROM course WHERE course_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, courseId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                // course = new Course(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4));
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "SELECT * FROM course WHERE course_id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, courseId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String courseName = resultSet.getString("course_name");
+                String description = resultSet.getString("description");
+                int teacherId = resultSet.getInt("teacher_id");
+
+                return new Course(courseId, courseName, description, teacherId);
             }
         } catch (SQLException e) {
-            throw new SQLException("Failed to get course by id from the Course table " + e.getMessage());
+            System.err.println("Error fetching course by ID: " + e.getMessage());
+            throw e; 
+        } finally {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
-        return course;
+        return null; 
     }
 
     @Override
     public void updateCourse(Course course) throws SQLException {
-        String query = "UPDATE course SET course_name = ?, description = ?, teacher_id = ? WHERE course_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, course.getCourseName());
-            ps.setString(2, course.getDescription());
-            // ps.setInt(3, course.getTeacherId());
-            ps.setInt(4, course.getCourseId());
-            ps.executeUpdate();
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "UPDATE course SET course_name = ?, description = ?, teacher_id = ? WHERE course_id = ?";
+            statement = connection.prepareStatement(sql);
+
+            statement.setString(1, course.getCourseName());
+            statement.setString(2, course.getDescription());
+            statement.setInt(3, course.getTeacher().getTeacherId());
+            statement.setInt(4, course.getCourseId());
+
+            statement.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException("Failed to update the data in the Course table " + e.getMessage());
+            System.err.println("Error updating course: " + e.getMessage());
+            throw e; 
+        } finally {
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
     }
 
     @Override
     public void deleteCourse(int courseId) throws SQLException {
-        String query = "DELETE FROM course WHERE course_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, courseId);
-            ps.executeUpdate();
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "DELETE FROM course WHERE course_id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, courseId);
+
+            statement.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException("Failed to delete the data in from Course table " + e.getMessage());
+            System.err.println("Error deleting course: " + e.getMessage());
+            throw e; 
+        } finally {
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
     }
 
     @Override
     public List<Course> getAllCourses() throws SQLException {
-        List <Course> courses = new ArrayList<>();
-        String query = "SELECT * FROM course";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                // courses.add(new Course(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+        List<Course> courseList = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "SELECT * FROM course";
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int courseId = resultSet.getInt("course_id");
+                String courseName = resultSet.getString("course_name");
+                String description = resultSet.getString("description");
+                int teacherId = resultSet.getInt("teacher_id");
+
+                courseList.add(new Course(courseId, courseName, description, teacherId));
             }
         } catch (SQLException e) {
-            throw new SQLException("Failed to get all the courses from the Course table " + e.getMessage());
+            System.err.println("Error fetching all courses: " + e.getMessage());
+            throw e; 
+        } finally {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
-        return courses;
+        return courseList;
     }
-
 }

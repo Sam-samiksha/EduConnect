@@ -1,14 +1,12 @@
 package com.wecp.progressive.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.wecp.progressive.entity.Student;
 import com.wecp.progressive.service.StudentService;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class StudentServiceImplArraylist implements StudentService {
@@ -28,23 +26,13 @@ public class StudentServiceImplArraylist implements StudentService {
 
     @Override
     public List<Student> getAllStudentSortedByName() {
-        List<Student> sortedByNameList = new ArrayList<>(studentList);
-        Collections.sort(sortedByNameList);
-        return sortedByNameList;
+        List<Student> sortStudents = studentList;
+        sortStudents.sort(Comparator.comparing(Student::getFullName));
+        return sortStudents;
     }
 
     @Override
     public void emptyArrayList() {
-        studentList.clear();
+        studentList = new ArrayList<>();
     }
-
-    public Comparator nameComparator = new Comparator<Student>() {
-
-        @Override
-        public int compare(Student s1, Student s2) {
-            return s1.getFullName().compareTo(s2.getFullName());
-        }
-
-    };
-
 }

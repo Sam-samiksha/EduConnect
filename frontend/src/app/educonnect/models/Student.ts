@@ -1,13 +1,19 @@
 export class Student {
     studentId: number;
     fullName: string;
-    dateOfBirth: Date | null;
+    dateOfBirth: Date | null = null;
     contactNumber: string;
     email: string;
     address: string;
 
-    constructor(studentId: number,fullName: string, dateOfBirth: Date | null, contactNumber: string, email: string,
-        address: string) {
+    constructor(
+        studentId: number,
+        fullName: string,
+        dateOfBirth: Date | null,
+        contactNumber: string,
+        email: string,
+        address: string
+    ) {
         this.studentId = studentId;
         this.fullName = fullName;
         this.dateOfBirth = dateOfBirth;
@@ -16,7 +22,7 @@ export class Student {
         this.address = address;
     }
 
-    logAttributes?(): void {
+    logAttributes(): void {
         console.log('studentId:', this.studentId);
         console.log('fullName:', this.fullName);
         console.log('dateOfBirth:', this.dateOfBirth);
@@ -25,3 +31,8 @@ export class Student {
         console.log('address:', this.address);
     }
 }
+
+
+
+
+

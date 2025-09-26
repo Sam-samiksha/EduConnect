@@ -1,20 +1,39 @@
 package com.wecp.progressive.service.impl;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.wecp.progressive.dto.TeacherDTO;
+import com.wecp.progressive.entity.Teacher;
+import com.wecp.progressive.entity.User;
+import com.wecp.progressive.exception.TeacherAlreadyExistsException;
+import com.wecp.progressive.repository.CourseRepository;
+import com.wecp.progressive.repository.EnrollmentRepository;
+import com.wecp.progressive.repository.TeacherRepository;
+import com.wecp.progressive.repository.UserRepository;
+import com.wecp.progressive.service.TeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.wecp.progressive.entity.Teacher;
-import com.wecp.progressive.exception.TeacherAlreadyExistsException;
-import com.wecp.progressive.repository.TeacherRepository;
-import com.wecp.progressive.service.TeacherService;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class TeacherServiceImplJpa implements TeacherService {
 
-    TeacherRepository teacherRepository;
+    private TeacherRepository teacherRepository;
 
+    @Autowired
+    CourseRepository courseRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
     public TeacherServiceImplJpa(TeacherRepository teacherRepository) {
         this.teacherRepository = teacherRepository;
     }
@@ -26,47 +45,70 @@ public class TeacherServiceImplJpa implements TeacherService {
 
     @Override
     public Integer addTeacher(Teacher teacher) throws Exception {
-        List<Teacher> teachers = teacherRepository.findAll();
-        for (Teacher t : teachers) {
-            if (t.getFullName().equals(teacher.getFullName())) {
-                throw new TeacherAlreadyExistsException("Teacher already exists");
-            }
+        Teacher existingTeacher = teacherRepository.findByEmail(teacher.getEmail());
+        if (existingTeacher != null) {
+            throw new TeacherAlreadyExistsException("Teacher with this email already exists, Email: " + teacher.getEmail());
         }
-        Teacher newTeacher = teacherRepository.save(teacher);
-        return newTeacher.getTeacherId();
+        return teacherRepository.save(teacher).getTeacherId();
     }
 
     @Override
     public List<Teacher> getTeacherSortedByExperience() throws Exception {
-        List<Teacher> sortedtTeacher = teacherRepository.findAll();
-        Collections.sort(sortedtTeacher);
-        return sortedtTeacher;
+        List<Teacher> sortedTeachers = teacherRepository.findAll();
+        sortedTeachers.sort(Comparator.comparing(Teacher::getYearsOfExperience));
+        return sortedTeachers;
     }
 
     @Override
     public void updateTeacher(Teacher teacher) throws Exception {
-        Teacher updatedTeacher = teacherRepository.findById(teacher.getTeacherId())
-                .orElseThrow(() -> new IllegalArgumentException("Teacher does not exist"));
-                
-        updatedTeacher.setFullName(teacher.getFullName());
-        updatedTeacher.setEmail(teacher.getEmail());
-        updatedTeacher.setContactNumber(teacher.getContactNumber());
-        updatedTeacher.setSubject(teacher.getSubject());
-        updatedTeacher.setYearsOfExperience(teacher.getYearsOfExperience());
-        teacherRepository.save(updatedTeacher);
+        Teacher existingTeacher = teacherRepository.findByEmail(teacher.getEmail());
+        if (existingTeacher != null) {
+            throw new TeacherAlreadyExistsException("Teacher with this email already exists, Email: " + teacher.getEmail());
+        }
+        teacherRepository.save(teacher);
     }
 
     @Override
     public void deleteTeacher(int teacherId) throws Exception {
-        Teacher deletedTeacher = teacherRepository.findById(teacherId).orElseThrow();
-        if (deletedTeacher != null) {
-            teacherRepository.delete(deletedTeacher);
-        }
+        userRepository.deleteByTeacherId(teacherId);
+        enrollmentRepository.deleteByTeacherId(teacherId);
+        courseRepository.deleteByTeacherId(teacherId);
+        teacherRepository.deleteById(teacherId);
     }
 
     @Override
     public Teacher getTeacherById(int teacherId) throws Exception {
-        return teacherRepository.findById(teacherId).orElse(null);
+        return teacherRepository.findByTeacherId(teacherId);
+    }
+
+    @Override
+    public void modifyTeacherDetails(TeacherDTO teacherDTO) throws Exception {
+        Teacher existingTeacher = teacherRepository.findByEmail(teacherDTO.getEmail());
+        User teacherUser = userRepository.findByTeacherId(teacherDTO.getTeacherId());
+
+        if (existingTeacher != null && existingTeacher.getTeacherId() != teacherDTO.getTeacherId()) {
+            throw new TeacherAlreadyExistsException("Teacher with email " + teacherDTO.getEmail() + " already exists");
+        }
+
+        User user = userRepository.findByUsername(teacherDTO.getUsername());
+        if (user != null && user.getTeacher().getTeacherId() != teacherDTO.getTeacherId()) {
+            throw new TeacherAlreadyExistsException("User with username " + teacherDTO.getEmail() + " already exists");
+        }
+        else {
+            teacherUser.setUsername(teacherDTO.getUsername());
+        }
+        if (!teacherUser.getPassword().equals(teacherDTO.getPassword())) {
+            teacherUser.setPassword(passwordEncoder.encode(teacherDTO.getPassword()));
+        }
+        userRepository.save(teacherUser);
+        Teacher updateEntity = new Teacher();
+        updateEntity.setTeacherId(teacherDTO.getTeacherId());
+        updateEntity.setEmail(teacherDTO.getEmail());
+        updateEntity.setFullName(teacherDTO.getFullName());
+        updateEntity.setSubject(teacherDTO.getSubject());
+        updateEntity.setContactNumber(teacherDTO.getContactNumber());
+        updateEntity.setYearsOfExperience(teacherDTO.getYearsOfExperience());
+        teacherRepository.save(updateEntity);
     }
 
 }

@@ -75,5 +75,4 @@ public class StudentDTO {
     public void setAddress(String address) {
         this.address = address;
     }
-
 }

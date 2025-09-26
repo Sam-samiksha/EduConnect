@@ -97,13 +97,13 @@ export class TeacherEditComponent implements OnInit {
 
     private handleError(error: HttpErrorResponse): void {
         if (error.error instanceof ErrorEvent) {
+            
             this.errorMessage = ` ${error.error.message}`;
         } else {
+            
             this.errorMessage = `${error.error}`;
         }
         this.successMessage = null;
     }
 
 }
-
-

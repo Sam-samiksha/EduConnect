@@ -1,32 +1,57 @@
-<h2>Create Student</h2>
-<form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
-    <label>Full Name:</label>
-    <input formControlName="fullName" />
-    <div *ngIf="studentForm.get('fullName')?.invalid && studentForm.get('fullName')?.touched">
-        <small>Name is required (min 2 characters).</small>
-    </div>
-    <label>Date of Birth:</label>
-    <input type="date" formControlName="dob" />
-    <div *ngIf="studentForm.get('dob')?.invalid && studentForm.get('dob')?.touched">
-        <small> Date of Birth is required.</small>
-    </div>
-    <label>Contact Number:</label>
-    <input formControlName="contact" />
-    <div *ngIf="studentForm.get('contact')?.invalid && studentForm.get('contact')?.touched">
-        <small> Enter a valid 10-digit number.</small>
-    </div>
-    <label>Email:</label>
-    <input formControlName="email" />
-    <div *ngIf="studentForm.get('email')?.invalid && studentForm.get('email')?.touched">
-        <small>Enter a valid email.</small>
-    </div>
-    <label>Address:</label>
-    <textarea formControlName="address"></textarea>
-    <div *ngIf="studentForm.get('address')?.invalid && studentForm.get('address')?.touched">
-        <small>Address must be at least 5 characters.</small>
-    </div>
-    <button type="submit" [disabled]="studentForm.invalid">Create</button>
-</form>
-<p class="success" *ngIf="successMessage">{{ successMessage }}</p>
-<p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-<a routerLink="/dashboard">Return to Dashboard</a>
+<div class="form-container">
+    <h2>Create Student</h2>
+    <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+
+        <div class="form-group">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" formControlName="fullName" />
+            <div class="error" *ngIf="studentForm.get('fullName')?.invalid && studentForm.get('fullName')?.touched">
+                Full Name is required and must have at least 2 characters.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" formControlName="dateOfBirth" />
+            <div class="error"
+                *ngIf="studentForm.get('dateOfBirth')?.invalid && studentForm.get('dateOfBirth')?.touched">
+                Date of Birth is required.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="contactNumber">Contact Number:</label>
+            <input type="text" id="contactNumber" formControlName="contactNumber" />
+            <div class="error"
+                *ngIf="studentForm.get('contactNumber')?.invalid && studentForm.get('contactNumber')?.touched">
+                Contact Number must be a 10-digit valid number.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" formControlName="email" />
+            <div class="error" *ngIf="studentForm.get('email')?.invalid && studentForm.get('email')?.touched">
+                Please provide a valid email address.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <textarea id="address" formControlName="address"></textarea>
+            <div class="error" *ngIf="studentForm.get('address')?.invalid && studentForm.get('address')?.touched">
+                Address must have at least 5 characters.
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" [disabled]="studentForm.invalid">Submit</button>
+        </div>
+        <div class="form-footer">
+            <a routerLink="/educonnect" class="link">Dashboard</a>
+        </div>
+    </form>
+
+    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div>

@@ -1,63 +1,71 @@
 package com.wecp.progressive.service.impl;
-
-import java.text.ParseException;
-import java.util.List;
-
+import com.wecp.progressive.entity.Enrollment;
+import com.wecp.progressive.repository.CourseRepository;
+import com.wecp.progressive.repository.EnrollmentRepository;
+import com.wecp.progressive.repository.StudentRepository;
+import com.wecp.progressive.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.wecp.progressive.entity.Enrollment;
-import com.wecp.progressive.exception.EnrollmentAlreadyExistsException;
-import com.wecp.progressive.repository.EnrollmentRepository;
-import com.wecp.progressive.service.EnrollmentService;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
 @Service
-public class EnrollmentServiceImpl implements EnrollmentService{
+public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Autowired
-    EnrollmentRepository enrollmentRepository;
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Override
-    public List<Enrollment> getAllEnrollments() throws ParseException{
-       return enrollmentRepository.findAll();
+    public List<Enrollment> getAllEnrollments() {
+        return enrollmentRepository.findAll();
     }
 
     @Override
-    public int createEnrollment(Enrollment enrollment) throws Exception {
-        List<Enrollment> enrollments = enrollmentRepository.findAll();
-        for(Enrollment e: enrollments){
-            if(e.getStudent().equals(enrollment.getStudent()) && e.getCourse().equals(enrollment.getCourse())){
-                throw new EnrollmentAlreadyExistsException("Enrollment already present");
-            }
+    public int createEnrollment(Enrollment enrollment) {
+        int studentId = enrollment.getStudent().getStudentId();
+        int courseId = enrollment.getCourse().getCourseId();
+
+        if (enrollmentRepository.findByStudent_StudentIdAndCourse_CourseId(studentId, courseId).isPresent()) {
+            throw new RuntimeException("Student is already enrolled in this course.");
         }
-        Enrollment newEnrollment = enrollmentRepository.save(enrollment);
-        return newEnrollment.getEnrollmentId();
+
+        enrollment.setEnrollmentDate(new Date());
+        return enrollmentRepository.save(enrollment).getEnrollmentId();
     }
 
     @Override
-    public void updateEnrollment(Enrollment enrollment) throws Exception {
-        Enrollment updatedEnrollment = enrollmentRepository.findById(enrollment.getEnrollmentId()).orElseThrow(()-> new RuntimeException("Enrollment does not exist"));
-        updatedEnrollment.setStudent(enrollment.getStudent());
-        updatedEnrollment.setCourse(enrollment.getCourse());
-        updatedEnrollment.setEnrollmentDate(enrollment.getEnrollmentDate());
-        enrollmentRepository.save(updatedEnrollment);
+    public void updateEnrollment(Enrollment updatedEnrollment) {
+        Enrollment existingEnrollment = enrollmentRepository.findById(updatedEnrollment.getEnrollmentId())
+                .orElseThrow(() -> new RuntimeException("Enrollment not found with ID: " + updatedEnrollment.getEnrollmentId()));
+
+        existingEnrollment.setStudent(updatedEnrollment.getStudent());
+        existingEnrollment.setCourse(updatedEnrollment.getCourse());
+        existingEnrollment.setEnrollmentDate(new Date());
+
+        enrollmentRepository.save(existingEnrollment);
     }
 
     @Override
-    public Enrollment getEnrollmentById(int enrollmentId)  throws ParseException {
-       Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(()-> new RuntimeException("Enrollment does not exist"));
-       return enrollment;
+    public Enrollment getEnrollmentById(int enrollmentId) {
+        return enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new RuntimeException("Enrollment not found with ID: " + enrollmentId));
     }
 
     @Override
-    public List<Enrollment> getAllEnrollmentsByStudent(int studentId) throws Exception {
-        List<Enrollment> enrollments = enrollmentRepository.findAllByStudent_StudentId(studentId);
-        return enrollments;
+    public List<Enrollment> getAllEnrollmentsByStudent(int studentId) {
+        return enrollmentRepository.findAllByStudent_StudentId(studentId);
     }
 
     @Override
-    public List<Enrollment> getAllEnrollmentsByCourse(int courseId) throws Exception {
-        List<Enrollment> enrollments = enrollmentRepository.findAllByCourse_CourseId(courseId);
-        return enrollments;
+    public List<Enrollment> getAllEnrollmentsByCourse(int courseId) {
+        return enrollmentRepository.findAllByCourse_CourseId(courseId);
     }
 }

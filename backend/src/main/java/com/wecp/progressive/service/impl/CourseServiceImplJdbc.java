@@ -1,69 +1,62 @@
 package com.wecp.progressive.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.wecp.progressive.dao.CourseDAO;
 import com.wecp.progressive.entity.Course;
 import com.wecp.progressive.service.CourseService;
 
-public class CourseServiceImplJdbc  implements CourseService{
+import java.sql.SQLException;
+import java.util.List;
+
+public class CourseServiceImplJdbc implements CourseService {
 
     private CourseDAO courseDAO;
 
-    public CourseServiceImplJdbc(CourseDAO courseDAO){
+    public CourseServiceImplJdbc(CourseDAO courseDAO) {
         this.courseDAO = courseDAO;
     }
 
     @Override
-    public List<Course> getAllCourses() {
-        List<Course> courses = new ArrayList<>();
+    public List<Course> getAllCourses() throws Exception {
         try {
-            courses = courseDAO.getAllCourses();
-        } catch (Exception e) {
-            System.out.println("Failed to gell all the courses "+e.getMessage());
+            return courseDAO.getAllCourses();
+        } catch (SQLException e) {
+            throw new Exception("Error fetching all courses", e);
         }
-        return courses;
     }
 
     @Override
-    public Course getCourseById(int courseId) {
-        Course course = null;
+    public Course getCourseById(int courseId) throws Exception {
         try {
-            course = courseDAO.getCourseById(courseId);
+            return courseDAO.getCourseById(courseId);
         } catch (Exception e) {
-            System.out.println("Failed to gell the course by ID "+e.getMessage());
+            throw new Exception("Error fetching course with ID " + courseId, e);
         }
-        return course;
     }
 
     @Override
-    public Integer addCourse(Course course) {
-        Integer courseId = null;
+    public Integer addCourse(Course course) throws Exception {
         try {
-            courseId = courseDAO.addCourse(course);
-        } catch (Exception e) {
-            System.out.println("Failed to add the course "+e.getMessage());
+            return courseDAO.addCourse(course);
+        } catch (SQLException e) {
+            throw new Exception("Error adding course: " + course.getCourseName(), e);
         }
-        return courseId;
     }
 
     @Override
-    public void updateCourse(Course course) {
+    public void updateCourse(Course course) throws Exception {
         try {
             courseDAO.updateCourse(course);
-        } catch (Exception e) {
-            System.out.println("Failed to update course "+e.getMessage());
+        } catch (SQLException e) {
+            throw new Exception("Error updating course with ID " + course.getCourseId(), e);
         }
     }
 
     @Override
-    public void deleteCourse(int courseId) {
+    public void deleteCourse(int courseId) throws Exception {
         try {
             courseDAO.deleteCourse(courseId);
-        } catch (Exception e) {
-            System.out.println("Failed to delete course "+e.getMessage());
+        } catch (SQLException e) {
+            throw new Exception("Error deleting course with ID " + courseId, e);
         }
     }
-
 }
